@@ -1,0 +1,595 @@
+
+<h1>Modul 7: Networking & APIs di Android</h1>
+
+<h2>Overview</h2>
+<p>Pada modul ini kita akan mempelajari cara melakukan HTTP requests, mengambil data dari API, parsing JSON, dan menampilkan data ke aplikasi Android.</p>
+
+<h2>7.1 HTTP Requests dengan Volley</h2>
+
+<h3>Apa itu Volley?</h3>
+<p>Volley adalah library HTTP yang dikembangkan Google untuk Android. Kelebihan Volley:</p>
+<ul>
+<li>Mudah digunakan</li>
+<li>Automatic request scheduling</li>
+<li>Built-in caching</li>
+<li>Request cancellation</li>
+<li>Image loading support</li>
+</ul>
+
+<h3>Setup Volley</h3>
+<p>Tambahkan dependency di <code>app/build.gradle</code>:</p>
+<pre><code>dependencies {
+    implementation 'com.android.volley:volley:1.2.1'
+}</code></pre>
+
+<p>Tambahkan internet permission di <code>AndroidManifest.xml</code>:</p>
+<pre><code>&lt;uses-permission android:name="android.permission.INTERNET" /&gt;
+&lt;uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" /&gt;</code></pre>
+
+<h3>RequestQueue Singleton</h3>
+<p>Buat class singleton untuk mengelola request queue:</p>
+<pre><code>public class VolleySingleton {
+    
+    private static VolleySingleton instance;
+    private RequestQueue requestQueue;
+    private static Context ctx;
+
+    private VolleySingleton(Context context) {
+        ctx = context;
+        requestQueue = getRequestQueue();
+    }
+
+    public static synchronized VolleySingleton getInstance(Context context) {
+        if (instance == null) {
+            instance = new VolleySingleton(context);
+        }
+        return instance;
+    }
+
+    public RequestQueue getRequestQueue() {
+        if (requestQueue == null) {
+            requestQueue = Volley.newRequestQueue(ctx.getApplicationContext());
+        }
+        return requestQueue;
+    }
+
+    public &lt;T&gt; void addToRequestQueue(Request&lt;T&gt; req) {
+        getRequestQueue().add(req);
+    }
+}</code></pre>
+
+<h2>7.2 JSON Parsing Manual</h2>
+
+<h3>Struktur JSON Sederhana</h3>
+<p>Contoh response JSON dari API:</p>
+<pre><code>{
+  "user": {
+    "id": 1,
+    "name": "John Doe",
+    "email": "john@example.com",
+    "age": 30
+  },
+  "status": "success"
+}</code></pre>
+
+<h3>Parsing JSON Object</h3>
+<pre><code>public class JsonParsingActivity extends AppCompatActivity {
+    private TextView tvResult;
+    private Button btnFetch;
+    private String url = "https://jsonplaceholder.typicode.com/users/1";
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_json_parsing);
+
+        tvResult = findViewById(R.id.tv_result);
+        btnFetch = findViewById(R.id.btn_fetch);
+
+        btnFetch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                fetchUserData();
+            }
+        });
+    }
+
+    private void fetchUserData() {
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
+            Request.Method.GET,
+            url,
+            null,
+            new Response.Listener&lt;JSONObject&gt;() {
+                @Override
+                public void onResponse(JSONObject response) {
+                    try {
+                        // Parse JSON response
+                        int id = response.getInt("id");
+                        String name = response.getString("name");
+                        String email = response.getString("email");
+                        
+                        // Parse nested object
+                        JSONObject address = response.getJSONObject("address");
+                        String city = address.getString("city");
+                        
+                        // Display result
+                        String result = "ID: " + id + "\n" +
+                                       "Name: " + name + "\n" +
+                                       "Email: " + email + "\n" +
+                                       "City: " + city;
+                        
+                        tvResult.setText(result);
+                        
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        tvResult.setText("Error parsing JSON: " + e.getMessage());
+                    }
+                }
+            },
+            new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    tvResult.setText("Error: " + error.getMessage());
+                }
+            }
+        );
+
+        // Add request to queue
+        VolleySingleton.getInstance(this).addToRequestQueue(jsonObjectRequest);
+    }
+}</code></pre>
+
+<h3>Parsing JSON Array</h3>
+<p>Contoh JSON Array:</p>
+<pre><code>[
+  {
+    "id": 1,
+    "title": "Post 1",
+    "body": "This is post 1"
+  },
+  {
+    "id": 2,
+    "title": "Post 2", 
+    "body": "This is post 2"
+  }
+]</code></pre>
+
+<pre><code>private void fetchPostsList() {
+    String url = "https://jsonplaceholder.typicode.com/posts";
+    
+    JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(
+        Request.Method.GET,
+        url,
+        null,
+        new Response.Listener&lt;JSONArray&gt;() {
+            @Override
+            public void onResponse(JSONArray response) {
+                try {
+                    StringBuilder result = new StringBuilder();
+                    
+                    for (int i = 0; i < response.length(); i++) {
+                        JSONObject post = response.getJSONObject(i);
+                        
+                        int id = post.getInt("id");
+                        String title = post.getString("title");
+                        String body = post.getString("body");
+                        
+                        result.append("Post ").append(id).append("\n")
+                              .append("Title: ").append(title).append("\n")
+                              .append("Body: ").append(body).append("\n\n");
+                    }
+                    
+                    tvResult.setText(result.toString());
+                    
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        },
+        new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                tvResult.setText("Error: " + error.getMessage());
+            }
+        }
+    );
+    
+    VolleySingleton.getInstance(this).addToRequestQueue(jsonArrayRequest);
+}</code></pre>
+
+<h2>7.3 AsyncTask untuk Background Operations</h2>
+
+<h3>Apa itu AsyncTask?</h3>
+<p>AsyncTask memungkinkan kita menjalankan operasi background tanpa memblokir UI thread.</p>
+<p><strong>Catatan</strong>: AsyncTask deprecated di API 30+, tapi masih banyak digunakan di project lama.</p>
+
+<h3>Struktur AsyncTask</h3>
+<pre><code>private class NetworkTask extends AsyncTask&lt;String, Void, String&gt; {
+    
+    @Override
+    protected void onPreExecute() {
+        super.onPreExecute();
+        // Dijalankan di UI thread sebelum background task
+        // Biasanya untuk show progress dialog
+        progressDialog = ProgressDialog.show(MainActivity.this, 
+            "Loading", "Please wait...", true);
+    }
+    
+    @Override
+    protected String doInBackground(String... urls) {
+        // Dijalankan di background thread
+        // Jangan update UI di sini!
+        try {
+            return downloadData(urls[0]);
+        } catch (Exception e) {
+            return "Error: " + e.getMessage();
+        }
+    }
+    
+    @Override
+    protected void onPostExecute(String result) {
+        super.onPostExecute(result);
+        // Dijalankan di UI thread setelah background task selesai
+        // Di sini bisa update UI
+        progressDialog.dismiss();
+        tvResult.setText(result);
+    }
+    
+    @Override
+    protected void onProgressUpdate(Void... values) {
+        super.onProgressUpdate(values);
+        // Untuk update progress, dipanggil dari publishProgress()
+    }
+}</code></pre>
+
+<h3>Implementasi HTTP Request Manual dengan AsyncTask</h3>
+<pre><code>private class HttpRequestTask extends AsyncTask&lt;String, Void, String&gt; {
+    
+    @Override
+    protected String doInBackground(String... urls) {
+        try {
+            URL url = new URL(urls[0]);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            connection.setConnectTimeout(10000);
+            connection.setReadTimeout(10000);
+            
+            int responseCode = connection.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(connection.getInputStream()));
+                
+                StringBuilder response = new StringBuilder();
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    response.append(line);
+                }
+                reader.close();
+                
+                return response.toString();
+            } else {
+                return "HTTP Error: " + responseCode;
+            }
+            
+        } catch (Exception e) {
+            return "Error: " + e.getMessage();
+        }
+    }
+    
+    @Override
+    protected void onPostExecute(String result) {
+        // Parse JSON dan update UI
+        parseAndDisplayData(result);
+    }
+}
+
+// Cara menggunakan
+new HttpRequestTask().execute("https://jsonplaceholder.typicode.com/posts/1");</code></pre>
+
+<h2>7.4 Handling Network Errors</h2>
+
+<h3>Jenis-jenis Network Error</h3>
+<ol>
+<li><strong>No Internet Connection</strong></li>
+<li><strong>Timeout</strong></li>
+<li><strong>Server Error (5xx)</strong></li>
+<li><strong>Client Error (4xx)</strong></li>
+<li><strong>Parse Error</strong></li>
+</ol>
+
+<h3>Check Internet Connection</h3>
+<pre><code>public class NetworkUtils {
+    
+    public static boolean isNetworkAvailable(Context context) {
+        ConnectivityManager connectivityManager = 
+            (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        
+        if (connectivityManager != null) {
+            NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+            return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+        }
+        return false;
+    }
+    
+    public static boolean isWifiConnected(Context context) {
+        ConnectivityManager connectivityManager = 
+            (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        
+        if (connectivityManager != null) {
+            NetworkInfo wifiInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+            return wifiInfo != null && wifiInfo.isConnected();
+        }
+        return false;
+    }
+}</code></pre>
+
+<h3>Error Handling dengan Volley</h3>
+<pre><code>private void fetchDataWithErrorHandling() {
+    // Check internet connection first
+    if (!NetworkUtils.isNetworkAvailable(this)) {
+        showError("No internet connection");
+        return;
+    }
+    
+    JsonObjectRequest request = new JsonObjectRequest(
+        Request.Method.GET,
+        url,
+        null,
+        new Response.Listener&lt;JSONObject&gt;() {
+            @Override
+            public void onResponse(JSONObject response) {
+                hideLoading();
+                handleSuccessResponse(response);
+            }
+        },
+        new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                hideLoading();
+                handleVolleyError(error);
+            }
+        }
+    );
+    
+    // Set timeout
+    request.setRetryPolicy(new DefaultRetryPolicy(
+        10000, // 10 seconds timeout
+        DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+        DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+    ));
+    
+    showLoading();
+    VolleySingleton.getInstance(this).addToRequestQueue(request);
+}
+
+private void handleVolleyError(VolleyError error) {
+    String errorMessage;
+    
+    if (error instanceof TimeoutError) {
+        errorMessage = "Request timeout. Please try again.";
+    } else if (error instanceof NoConnectionError) {
+        errorMessage = "No internet connection.";
+    } else if (error instanceof AuthFailureError) {
+        errorMessage = "Authentication failed.";
+    } else if (error instanceof ServerError) {
+        errorMessage = "Server error. Please try again later.";
+    } else if (error instanceof NetworkError) {
+        errorMessage = "Network error. Check your connection.";
+    } else if (error instanceof ParseError) {
+        errorMessage = "Data parsing error.";
+    } else {
+        errorMessage = "Unknown error occurred.";
+    }
+    
+    showError(errorMessage);
+}
+
+private void showError(String message) {
+    Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+    tvResult.setText("Error: " + message);
+}
+
+private void showLoading() {
+    progressBar.setVisibility(View.VISIBLE);
+    btnFetch.setEnabled(false);
+}
+
+private void hideLoading() {
+    progressBar.setVisibility(View.GONE);
+    btnFetch.setEnabled(true);
+}</code></pre>
+
+<h2>7.5 Praktik Lengkap: News App</h2>
+
+<h3>Model Class untuk News</h3>
+<pre><code>public class NewsItem {
+    private String title;
+    private String description;
+    private String imageUrl;
+    private String publishedAt;
+    private String url;
+    
+    public NewsItem() {}
+    
+    public NewsItem(String title, String description, String imageUrl, 
+                   String publishedAt, String url) {
+        this.title = title;
+        this.description = description;
+        this.imageUrl = imageUrl;
+        this.publishedAt = publishedAt;
+        this.url = url;
+    }
+    
+    // Getters dan Setters
+    public String getTitle() { return title; }
+    public void setTitle(String title) { this.title = title; }
+    
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
+    
+    public String getImageUrl() { return imageUrl; }
+    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
+    
+    public String getPublishedAt() { return publishedAt; }
+    public void setPublishedAt(String publishedAt) { this.publishedAt = publishedAt; }
+    
+    public String getUrl() { return url; }
+    public void setUrl(String url) { this.url = url; }
+}</code></pre>
+
+<h3>News Adapter untuk RecyclerView</h3>
+<pre><code>public class NewsAdapter extends RecyclerView.Adapter&lt;NewsAdapter.NewsViewHolder&gt; {
+    private List&lt;NewsItem&gt; newsList;
+    private Context context;
+    
+    public NewsAdapter(Context context, List&lt;NewsItem&gt; newsList) {
+        this.context = context;
+        this.newsList = newsList;
+    }
+    
+    @Override
+    public NewsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(context)
+            .inflate(R.layout.item_news, parent, false);
+        return new NewsViewHolder(view);
+    }
+    
+    @Override
+    public void onBindViewHolder(NewsViewHolder holder, int position) {
+        NewsItem news = newsList.get(position);
+        
+        holder.tvTitle.setText(news.getTitle());
+        holder.tvDescription.setText(news.getDescription());
+        holder.tvDate.setText(news.getPublishedAt());
+        
+        // Load image (nanti kita bahas image loading)
+        if (news.getImageUrl() != null && !news.getImageUrl().isEmpty()) {
+            // Sementara hide image jika tidak ada
+            holder.ivNews.setVisibility(View.VISIBLE);
+        } else {
+            holder.ivNews.setVisibility(View.GONE);
+        }
+        
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Open news detail atau browser
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse(news.getUrl()));
+                context.startActivity(intent);
+            }
+        });
+    }
+    
+    @Override
+    public int getItemCount() {
+        return newsList.size();
+    }
+    
+    public void updateNews(List&lt;NewsItem&gt; newNewsList) {
+        this.newsList = newNewsList;
+        notifyDataSetChanged();
+    }
+    
+    static class NewsViewHolder extends RecyclerView.ViewHolder {
+        TextView tvTitle, tvDescription, tvDate;
+        ImageView ivNews;
+        
+        public NewsViewHolder(View itemView) {
+            super(itemView);
+            tvTitle = itemView.findViewById(R.id.tv_title);
+            tvDescription = itemView.findViewById(R.id.tv_description);
+            tvDate = itemView.findViewById(R.id.tv_date);
+            ivNews = itemView.findViewById(R.id.iv_news);
+        }
+    }
+}</code></pre>
+
+<h3>Main Activity untuk News App</h3>
+<pre><code>public class NewsActivity extends AppCompatActivity {
+    private RecyclerView recyclerView;
+    private NewsAdapter adapter;
+    private List&lt;NewsItem&gt; newsList;
+    private ProgressBar progressBar;
+    private SwipeRefreshLayout swipeRefresh;
+    
+    // API key gratis dari newsapi.org
+    private final String API_KEY = "your_api_key_here";
+    private final String NEWS_URL = "https://newsapi.org/v2/top-headlines?country=id&apiKey=" + API_KEY;
+    
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_news);
+        
+        initViews();
+        setupRecyclerView();
+        loadNews();
+    }
+    
+    private void initViews() {
+        recyclerView = findViewById(R.id.recycler_view);
+        progressBar = findViewById(R.id.progress_bar);
+        swipeRefresh = findViewById(R.id.swipe_refresh);
+        
+        swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                loadNews();
+            }
+        });
+    }
+    
+    private void setupRecyclerView() {
+        newsList = new ArrayList&lt;&gt;();
+        adapter = new NewsAdapter(this, newsList);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(adapter);
+    }
+    
+    private void loadNews() {
+        if (!NetworkUtils.isNetworkAvailable(this)) {
+            showError("No internet connection");
+            return;
+        }
+        
+        showLoading(true);
+        
+        JsonObjectRequest request = new JsonObjectRequest(
+            Request.Method.GET,
+            NEWS_URL,
+            null,
+            new Response.Listener&lt;JSONObject&gt;() {
+                @Override
+                public void onResponse(JSONObject response) {
+                    showLoading(false);
+                    parseNewsResponse(response);
+                }
+            },
+            new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    showLoading(false);
+                    handleError(error);
+                }
+            }
+        );
+        
+        VolleySingleton.getInstance(this).addToRequestQueue(request);
+    }
+    
+    private void parseNewsResponse(JSONObject response) {
+        try {
+            String status = response.getString("status");
+            
+            if ("ok".equals(status)) {
+                JSONArray articles = response.getJSONArray("articles");
+                List&lt;NewsItem&gt; newNewsList = new ArrayList&lt;&gt;();
+                
+                for (int i = 0; i < articles.length(); i++) {
+                    JSONObject article = articles.getJSONObject(i);
+                    
+                    String title = article.optString("title", "No Title");
+                    String description = article.optString("description", "No Description");
+                    String imageUrl = article.optString("urlToImage", "");
+  
