@@ -1,0 +1,586 @@
+
+<h1>Modul 5: Lists & Data Display</h1>
+
+<h2>1. Konsep Lists di Android</h2>
+
+<h3>Mengapa Butuh Lists?</h3>
+<ul>
+<li>Menampilkan data dalam jumlah banyak (kontak, pesan, produk, dll)</li>
+<li>Efisien dalam penggunaan memory dengan recycling views</li>
+<li>Memberikan pengalaman scrolling yang smooth</li>
+<li>Mendukung interaksi seperti click, long click</li>
+</ul>
+
+<h3>Jenis Lists di Android:</h3>
+<ol>
+<li><strong>ListView</strong> - Legacy, masih digunakan untuk kasus sederhana</li>
+<li><strong>RecyclerView</strong> - Modern, lebih fleksibel dan performant</li>
+</ol>
+
+<h2>2. ListView dengan ArrayAdapter</h2>
+
+<h3>Konsep ListView</h3>
+<p>ListView adalah komponen UI untuk menampilkan data dalam bentuk list yang bisa di-scroll.</p>
+
+<h3>Setup Dasar ListView</h3>
+
+<h4>Layout dengan ListView</h4>
+<pre><code>&lt;!-- activity_main.xml --&gt;
+&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"&gt;
+
+    &lt;TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Daftar Buah"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="16dp" /&gt;
+
+    &lt;ListView
+        android:id="@+id/listView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" /&gt;
+
+&lt;/LinearLayout&gt;</code></pre>
+
+<h4>MainActivity dengan ArrayAdapter</h4>
+<pre><code>public class MainActivity extends AppCompatActivity {
+    
+    private ListView listView;
+    private ArrayAdapter&lt;String&gt; adapter;
+    private List&lt;String&gt; buahList;
+    
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        
+        listView = findViewById(R.id.listView);
+        
+        // Membuat data
+        buahList = new ArrayList&lt;&gt;();
+        buahList.add("Apel");
+        buahList.add("Jeruk");
+        buahList.add("Mangga");
+        buahList.add("Pisang");
+        buahList.add("Strawberry");
+        buahList.add("Anggur");
+        buahList.add("Semangka");
+        
+        // Membuat adapter
+        adapter = new ArrayAdapter&lt;&gt;(this, android.R.layout.simple_list_item_1, buahList);
+        
+        // Set adapter ke ListView
+        listView.setAdapter(adapter);
+        
+        // Handle item click
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView&lt;?&gt; parent, View view, int position, long id) {
+                String selectedBuah = buahList.get(position);
+                Toast.makeText(MainActivity.this, "Dipilih: " + selectedBuah, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+}</code></pre>
+
+<h3>Custom ListView Layout</h3>
+
+<h4>Membuat Layout Item Custom</h4>
+<pre><code>&lt;!-- item_buah.xml --&gt;
+&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="12dp"&gt;
+
+    &lt;ImageView
+        android:id="@+id/ivBuah"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:src="@drawable/ic_fruit"
+        android:layout_marginEnd="12dp" /&gt;
+
+    &lt;LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:layout_gravity="center_vertical"&gt;
+
+        &lt;TextView
+            android:id="@+id/tvNamaBuah"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Nama Buah"
+            android:textSize="16sp"
+            android:textStyle="bold" /&gt;
+
+        &lt;TextView
+            android:id="@+id/tvHarga"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Harga"
+            android:textSize="14sp"
+            android:textColor="#666666" /&gt;
+
+    &lt;/LinearLayout&gt;
+
+    &lt;TextView
+        android:id="@+id/tvStock"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Stock"
+        android:textSize="12sp"
+        android:background="#E0E0E0"
+        android:padding="4dp"
+        android:layout_gravity="center_vertical" /&gt;
+
+&lt;/LinearLayout&gt;</code></pre>
+
+<h3>Custom Adapter untuk ListView</h3>
+
+<h4>Model Class Buah</h4>
+<pre><code>public class Buah {
+    private String nama;
+    private String harga;
+    private int stock;
+    private int imageResource;
+    
+    public Buah(String nama, String harga, int stock, int imageResource) {
+        this.nama = nama;
+        this.harga = harga;
+        this.stock = stock;
+        this.imageResource = imageResource;
+    }
+    
+    // Getters
+    public String getNama() { return nama; }
+    public String getHarga() { return harga; }
+    public int getStock() { return stock; }
+    public int getImageResource() { return imageResource; }
+    
+    // Setters
+    public void setNama(String nama) { this.nama = nama; }
+    public void setHarga(String harga) { this.harga = harga; }
+    public void setStock(int stock) { this.stock = stock; }
+    public void setImageResource(int imageResource) { this.imageResource = imageResource; }
+}</code></pre>
+
+<h4>Custom ArrayAdapter</h4>
+<pre><code>public class BuahAdapter extends ArrayAdapter&lt;Buah&gt; {
+    
+    private Context context;
+    private List&lt;Buah&gt; buahList;
+    
+    public BuahAdapter(Context context, List&lt;Buah&gt; buahList) {
+        super(context, R.layout.item_buah, buahList);
+        this.context = context;
+        this.buahList = buahList;
+    }
+    
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        View itemView = convertView;
+        
+        if (itemView == null) {
+            LayoutInflater inflater = LayoutInflater.from(context);
+            itemView = inflater.inflate(R.layout.item_buah, parent, false);
+        }
+        
+        // Get current buah
+        Buah currentBuah = buahList.get(position);
+        
+        // Find views
+        ImageView ivBuah = itemView.findViewById(R.id.ivBuah);
+        TextView tvNamaBuah = itemView.findViewById(R.id.tvNamaBuah);
+        TextView tvHarga = itemView.findViewById(R.id.tvHarga);
+        TextView tvStock = itemView.findViewById(R.id.tvStock);
+        
+        // Set data
+        ivBuah.setImageResource(currentBuah.getImageResource());
+        tvNamaBuah.setText(currentBuah.getNama());
+        tvHarga.setText(currentBuah.getHarga());
+        tvStock.setText(String.valueOf(currentBuah.getStock()));
+        
+        return itemView;
+    }
+}</code></pre>
+
+<h4>Menggunakan Custom Adapter</h4>
+<pre><code>public class MainActivity extends AppCompatActivity {
+    
+    private ListView listView;
+    private BuahAdapter adapter;
+    private List&lt;Buah&gt; buahList;
+    
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        
+        listView = findViewById(R.id.listView);
+        
+        // Membuat data
+        buahList = new ArrayList&lt;&gt;();
+        buahList.add(new Buah("Apel", "Rp 25.000/kg", 15, R.drawable.apel));
+        buahList.add(new Buah("Jeruk", "Rp 20.000/kg", 8, R.drawable.jeruk));
+        buahList.add(new Buah("Mangga", "Rp 30.000/kg", 12, R.drawable.mangga));
+        buahList.add(new Buah("Pisang", "Rp 15.000/kg", 20, R.drawable.pisang));
+        
+        // Membuat adapter
+        adapter = new BuahAdapter(this, buahList);
+        
+        // Set adapter ke ListView
+        listView.setAdapter(adapter);
+        
+        // Handle item click
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView&lt;?&gt; parent, View view, int position, long id) {
+                Buah selectedBuah = buahList.get(position);
+                
+                Intent intent = new Intent(MainActivity.this, DetailActivity.class);
+                intent.putExtra("nama", selectedBuah.getNama());
+                intent.putExtra("harga", selectedBuah.getHarga());
+                intent.putExtra("stock", selectedBuah.getStock());
+                startActivity(intent);
+            }
+        });
+    }
+}</code></pre>
+
+<h2>3. RecyclerView - Pendekatan Modern</h2>
+
+<h3>Mengapa RecyclerView?</h3>
+<ul>
+<li><strong>Lebih efisien</strong>: Automatic view recycling</li>
+<li><strong>Lebih fleksibel</strong>: Support berbagai layout manager</li>
+<li><strong>Lebih powerful</strong>: Built-in animations dan decorations</li>
+<li><strong>Best practice</strong>: Recommended oleh Google</li>
+</ul>
+
+<h3>Setup RecyclerView</h3>
+
+<h4>1. Tambah Dependency</h4>
+<pre><code>// build.gradle (Module: app)
+dependencies {
+    implementation 'androidx.recyclerview:recyclerview:1.3.0'
+}</code></pre>
+
+<h4>2. Layout dengan RecyclerView</h4>
+<pre><code>&lt;!-- activity_main.xml --&gt;
+&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"&gt;
+
+    &lt;TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Daftar Buah (RecyclerView)"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="16dp" /&gt;
+
+    &lt;androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" /&gt;
+
+&lt;/LinearLayout&gt;</code></pre>
+
+<h3>ViewHolder Pattern</h3>
+
+<h4>Custom RecyclerView Adapter</h4>
+<pre><code>public class BuahRecyclerAdapter extends RecyclerView.Adapter&lt;BuahRecyclerAdapter.BuahViewHolder&gt; {
+    
+    private Context context;
+    private List&lt;Buah&gt; buahList;
+    private OnItemClickListener listener;
+    
+    public interface OnItemClickListener {
+        void onItemClick(Buah buah);
+    }
+    
+    public BuahRecyclerAdapter(Context context, List&lt;Buah&gt; buahList) {
+        this.context = context;
+        this.buahList = buahList;
+    }
+    
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.listener = listener;
+    }
+    
+    @Override
+    public BuahViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(context).inflate(R.layout.item_buah, parent, false);
+        return new BuahViewHolder(view);
+    }
+    
+    @Override
+    public void onBindViewHolder(BuahViewHolder holder, int position) {
+        Buah buah = buahList.get(position);
+        holder.bind(buah);
+    }
+    
+    @Override
+    public int getItemCount() {
+        return buahList.size();
+    }
+    
+    public class BuahViewHolder extends RecyclerView.ViewHolder {
+        
+        private ImageView ivBuah;
+        private TextView tvNamaBuah;
+        private TextView tvHarga;
+        private TextView tvStock;
+        
+        public BuahViewHolder(View itemView) {
+            super(itemView);
+            
+            ivBuah = itemView.findViewById(R.id.ivBuah);
+            tvNamaBuah = itemView.findViewById(R.id.tvNamaBuah);
+            tvHarga = itemView.findViewById(R.id.tvHarga);
+            tvStock = itemView.findViewById(R.id.tvStock);
+            
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int position = getAdapterPosition();
+                    if (position != RecyclerView.NO_POSITION && listener != null) {
+                        listener.onItemClick(buahList.get(position));
+                    }
+                }
+            });
+        }
+        
+        public void bind(Buah buah) {
+            ivBuah.setImageResource(buah.getImageResource());
+            tvNamaBuah.setText(buah.getNama());
+            tvHarga.setText(buah.getHarga());
+            tvStock.setText(String.valueOf(buah.getStock()));
+        }
+    }
+}</code></pre>
+
+<h4>Menggunakan RecyclerView</h4>
+<pre><code>public class MainActivity extends AppCompatActivity {
+    
+    private RecyclerView recyclerView;
+    private BuahRecyclerAdapter adapter;
+    private List&lt;Buah&gt; buahList;
+    
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        
+        recyclerView = findViewById(R.id.recyclerView);
+        
+        // Setup RecyclerView
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setHasFixedSize(true);
+        
+        // Membuat data
+        initData();
+        
+        // Setup adapter
+        adapter = new BuahRecyclerAdapter(this, buahList);
+        recyclerView.setAdapter(adapter);
+        
+        // Handle item click
+        adapter.setOnItemClickListener(new BuahRecyclerAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(Buah buah) {
+                Intent intent = new Intent(MainActivity.this, DetailActivity.class);
+                intent.putExtra("nama", buah.getNama());
+                intent.putExtra("harga", buah.getHarga());
+                intent.putExtra("stock", buah.getStock());
+                startActivity(intent);
+            }
+        });
+    }
+    
+    private void initData() {
+        buahList = new ArrayList&lt;&gt;();
+        buahList.add(new Buah("Apel", "Rp 25.000/kg", 15, R.drawable.apel));
+        buahList.add(new Buah("Jeruk", "Rp 20.000/kg", 8, R.drawable.jeruk));
+        buahList.add(new Buah("Mangga", "Rp 30.000/kg", 12, R.drawable.mangga));
+        buahList.add(new Buah("Pisang", "Rp 15.000/kg", 20, R.drawable.pisang));
+        buahList.add(new Buah("Strawberry", "Rp 45.000/kg", 5, R.drawable.strawberry));
+        buahList.add(new Buah("Anggur", "Rp 35.000/kg", 10, R.drawable.anggur));
+    }
+}</code></pre>
+
+<h2>4. Layout Managers RecyclerView</h2>
+
+<h3>LinearLayoutManager</h3>
+<pre><code>// Vertical list (default)
+recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+// Horizontal list
+recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));</code></pre>
+
+<h3>GridLayoutManager</h3>
+<pre><code>// Grid dengan 2 kolom
+recyclerView.setLayoutManager(new GridLayoutManager(this, 2));</code></pre>
+
+<h3>StaggeredGridLayoutManager</h3>
+<pre><code>// Staggered grid dengan 2 kolom
+recyclerView.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));</code></pre>
+
+<h2>5. Handling Item Clicks</h2>
+
+<h3>ClickListener Interface</h3>
+<pre><code>public interface OnItemClickListener {
+    void onItemClick(Buah buah, int position);
+    void onItemLongClick(Buah buah, int position);
+}</code></pre>
+
+<h3>Implementasi di ViewHolder</h3>
+<pre><code>public BuahViewHolder(View itemView) {
+    super(itemView);
+    
+    // ... findViewById ...
+    
+    itemView.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            int position = getAdapterPosition();
+            if (position != RecyclerView.NO_POSITION && listener != null) {
+                listener.onItemClick(buahList.get(position), position);
+            }
+        }
+    });
+    
+    itemView.setOnLongClickListener(new View.OnLongClickListener() {
+        @Override
+        public boolean onLongClick(View v) {
+            int position = getAdapterPosition();
+            if (position != RecyclerView.NO_POSITION && listener != null) {
+                listener.onItemLongClick(buahList.get(position), position);
+                return true;
+            }
+            return false;
+        }
+    });
+}</code></pre>
+
+<h2>6. Update Data Dinamis</h2>
+
+<h3>Menambah Item</h3>
+<pre><code>public void addBuah(Buah buah) {
+    buahList.add(buah);
+    notifyItemInserted(buahList.size() - 1);
+}</code></pre>
+
+<h3>Menghapus Item</h3>
+<pre><code>public void removeBuah(int position) {
+    buahList.remove(position);
+    notifyItemRemoved(position);
+}</code></pre>
+
+<h3>Update Item</h3>
+<pre><code>public void updateBuah(int position, Buah buah) {
+    buahList.set(position, buah);
+    notifyItemChanged(position);
+}</code></pre>
+
+<h3>Update Semua Data</h3>
+<pre><code>public void updateAllData(List&lt;Buah&gt; newBuahList) {
+    this.buahList.clear();
+    this.buahList.addAll(newBuahList);
+    notifyDataSetChanged();
+}</code></pre>
+
+<h2>7. Praktik - Aplikasi Kontak</h2>
+
+<h3>Model Kontak</h3>
+<pre><code>public class Kontak {
+    private String nama;
+    private String nomorTelepon;
+    private String email;
+    private int avatar;
+    
+    public Kontak(String nama, String nomorTelepon, String email, int avatar) {
+        this.nama = nama;
+        this.nomorTelepon = nomorTelepon;
+        this.email = email;
+        this.avatar = avatar;
+    }
+    
+    // Getters dan Setters
+    public String getNama() { return nama; }
+    public String getNomorTelepon() { return nomorTelepon; }
+    public String getEmail() { return email; }
+    public int getAvatar() { return avatar; }
+    
+    public void setNama(String nama) { this.nama = nama; }
+    public void setNomorTelepon(String nomorTelepon) { this.nomorTelepon = nomorTelepon; }
+    public void setEmail(String email) { this.email = email; }
+    public void setAvatar(int avatar) { this.avatar = avatar; }
+}</code></pre>
+
+<h3>Layout Item Kontak</h3>
+<pre><code>&lt;!-- item_kontak.xml --&gt;
+&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    app:cardCornerRadius="8dp"
+    app:cardElevation="4dp"&gt;
+
+    &lt;LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="16dp"&gt;
+
+        &lt;ImageView
+            android:id="@+id/ivAvatar"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/ic_person"
+            android:layout_marginEnd="16dp"
+            android:layout_gravity="center_vertical" /&gt;
+
+        &lt;LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"&gt;
+
+            &lt;TextView
+                android:id="@+id/tvNama"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Nama Kontak"
+                android:textSize="16sp"
+                android:textStyle="bold" /&gt;
+
+            &lt;TextView
+                android:id="@+id/tvTelepon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Nomor Telepon"
+                android:textSize="14sp"
+                android:textColor="#666666" /&gt;
+
+            &lt;TextView
+                android:id="@+id/tvEmail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Email"
+                android:textSize="12sp"
+                android:textC
