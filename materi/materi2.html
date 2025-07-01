@@ -1,0 +1,583 @@
+
+  <h1>Modul 2: UI Development</h1>
+  <h2>Membuat User Interface Android dengan Java</h2>
+
+  <h3>🎯 Tujuan Pembelajaran</h3>
+  <ul>
+    <li>Memahami berbagai jenis Views di Android</li>
+    <li>Menggunakan Layout containers dengan efektif</li>
+    <li>Menerapkan styling dan theming</li>
+    <li>Menangani user interactions (click events)</li>
+    <li>Membuat form input sederhana</li>
+  </ul>
+
+  <hr>
+
+  <h2>1. Basic Views (UI Components)</h2>
+
+  <h3>TextView - Menampilkan Text</h3>
+  <pre><code>&lt;TextView
+    android:id="@+id/textView1"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="Hello Android!"
+    android:textSize="18sp"
+    android:textColor="#FF0000"
+    android:textStyle="bold" /&gt;
+  </code></pre>
+
+  <p><strong>Atribut Penting:</strong></p>
+  <ul>
+    <li><code>android:text</code>: Text yang ditampilkan</li>
+    <li><code>android:textSize</code>: Ukuran font (gunakan sp)</li>
+    <li><code>android:textColor</code>: Warna text (hex atau color resource)</li>
+    <li><code>android:textStyle</code>: normal, bold, italic</li>
+  </ul>
+
+  <h3>Button - Tombol Interaktif</h3>
+  <pre><code>&lt;Button
+    android:id="@+id/button1"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="Klik Saya"
+    android:background="#4CAF50"
+    android:textColor="#FFFFFF"
+    android:padding="16dp" /&gt;
+  </code></pre>
+
+  <h3>EditText - Input Field</h3>
+  <pre><code>&lt;EditText
+    android:id="@+id/editText1"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:hint="Masukkan nama Anda"
+    android:inputType="textPersonName"
+    android:padding="12dp"
+    android:background="@drawable/edittext_border" /&gt;
+  </code></pre>
+
+  <p><strong>Input Types:</strong></p>
+  <ul>
+    <li><code>textPersonName</code>: Nama orang</li>
+    <li><code>textEmailAddress</code>: Email</li>
+    <li><code>textPassword</code>: Password</li>
+    <li><code>number</code>: Angka saja</li>
+    <li><code>phone</code>: Nomor telepon</li>
+  </ul>
+
+  <h3>ImageView - Menampilkan Gambar</h3>
+  <pre><code>&lt;ImageView
+    android:id="@+id/imageView1"
+    android:layout_width="100dp"
+    android:layout_height="100dp"
+    android:src="@drawable/ic_launcher_foreground"
+    android:scaleType="centerCrop"
+    android:contentDescription="Logo aplikasi" /&gt;
+  </code></pre>
+  <h2>2. Layout Containers</h2>
+
+<h3>LinearLayout - Susunan Linear</h3>
+<pre><code>&lt;!-- Vertical Layout --&gt;
+&lt;LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"&gt;
+
+    &lt;TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Item 1" /&gt;
+
+    &lt;TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Item 2" /&gt;
+
+&lt;/LinearLayout&gt;
+
+&lt;!-- Horizontal Layout --&gt;
+&lt;LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:weightSum="2"&gt;
+
+    &lt;Button
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Button 1" /&gt;
+
+    &lt;Button
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Button 2" /&gt;
+
+&lt;/LinearLayout&gt;
+</code></pre>
+
+<h3>RelativeLayout - Posisi Relatif</h3>
+<pre><code>&lt;RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"&gt;
+
+    &lt;TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="50dp"
+        android:text="Judul"
+        android:textSize="24sp" /&gt;
+
+    &lt;Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/title"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:text="Tombol" /&gt;
+
+&lt;/RelativeLayout&gt;
+</code></pre>
+
+<h3>ConstraintLayout - Layout Modern (Recommended)</h3>
+<pre><code>&lt;androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"&gt;
+
+    &lt;TextView
+        android:id="@+id/titleText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Welcome"
+        android:textSize="24sp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="100dp" /&gt;
+
+    &lt;EditText
+        android:id="@+id/nameInput"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="Enter your name"
+        app:layout_constraintTop_toBottomOf="@id/titleText"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="50dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp" /&gt;
+
+&lt;/androidx.constraintlayout.widget.ConstraintLayout&gt;
+</code></pre>
+<h2>3. Styling dan Theming</h2>
+
+<h3>colors.xml</h3>
+<pre><code>&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;resources&gt;
+    &lt;color name="purple_200"&gt;#FFBB86FC&lt;/color&gt;
+    &lt;color name="purple_500"&gt;#FF6200EE&lt;/color&gt;
+    &lt;color name="purple_700"&gt;#FF3700B3&lt;/color&gt;
+    &lt;color name="teal_200"&gt;#FF03DAC5&lt;/color&gt;
+    &lt;color name="teal_700"&gt;#FF018786&lt;/color&gt;
+    &lt;color name="black"&gt;#FF000000&lt;/color&gt;
+    &lt;color name="white"&gt;#FFFFFFFF&lt;/color&gt;
+
+    &lt;!-- Custom Colors --&gt;
+    &lt;color name="primary_blue"&gt;#2196F3&lt;/color&gt;
+    &lt;color name="success_green"&gt;#4CAF50&lt;/color&gt;
+    &lt;color name="warning_orange"&gt;#FF9800&lt;/color&gt;
+&lt;/resources&gt;
+</code></pre>
+
+<h3>strings.xml</h3>
+<pre><code>&lt;resources&gt;
+    &lt;string name="app_name"&gt;My Android App&lt;/string&gt;
+    &lt;string name="welcome_message"&gt;Selamat datang di aplikasi kami!&lt;/string&gt;
+    &lt;string name="button_submit"&gt;Kirim&lt;/string&gt;
+    &lt;string name="hint_name"&gt;Masukkan nama Anda&lt;/string&gt;
+    &lt;string name="hint_email"&gt;Masukkan email Anda&lt;/string&gt;
+&lt;/resources&gt;
+</code></pre>
+
+<h3>dimens.xml</h3>
+<pre><code>&lt;resources&gt;
+    &lt;dimen name="margin_small"&gt;8dp&lt;/dimen&gt;
+    &lt;dimen name="margin_medium"&gt;16dp&lt;/dimen&gt;
+    &lt;dimen name="margin_large"&gt;24dp&lt;/dimen&gt;
+    &lt;dimen name="text_size_small"&gt;14sp&lt;/dimen&gt;
+    &lt;dimen name="text_size_medium"&gt;16sp&lt;/dimen&gt;
+    &lt;dimen name="text_size_large"&gt;20sp&lt;/dimen&gt;
+&lt;/resources&gt;
+</code></pre>
+
+<h3>Custom Style</h3>
+<pre><code>&lt;!-- styles.xml --&gt;
+&lt;resources&gt;
+    &lt;style name="CustomButton"&gt;
+        &lt;item name="android:layout_width"&gt;match_parent&lt;/item&gt;
+        &lt;item name="android:layout_height"&gt;wrap_content&lt;/item&gt;
+        &lt;item name="android:background"&gt;@color/primary_blue&lt;/item&gt;
+        &lt;item name="android:textColor"&gt;@color/white&lt;/item&gt;
+        &lt;item name="android:padding"&gt;16dp&lt;/item&gt;
+        &lt;item name="android:textSize"&gt;16sp&lt;/item&gt;
+        &lt;item name="android:textStyle"&gt;bold&lt;/item&gt;
+    &lt;/style&gt;
+&lt;/resources&gt;
+</code></pre>
+
+<h4>Penggunaan di layout</h4>
+<pre><code>&lt;Button
+    android:id="@+id/myButton"
+    style="@style/CustomButton"
+    android:text="Custom Button" /&gt;
+</code></pre>
+
+<h2>4. Handling User Interactions</h2>
+
+<h3>Click Events di Java</h3>
+<pre><code>public class MainActivity extends AppCompatActivity {
+    private Button submitButton;
+    private EditText nameInput;
+    private TextView resultText;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        
+        // Initialize views
+        submitButton = findViewById(R.id.submitButton);
+        nameInput = findViewById(R.id.nameInput);
+        resultText = findViewById(R.id.resultText);
+        
+        // Set click listener
+        submitButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                handleSubmitClick();
+            }
+        });
+    }
+    
+    private void handleSubmitClick() {
+        String name = nameInput.getText().toString().trim();
+        
+        if (name.isEmpty()) {
+            nameInput.setError("Nama tidak boleh kosong");
+            return;
+        }
+        
+        resultText.setText("Hello, " + name + "!");
+        resultText.setVisibility(View.VISIBLE);
+    }
+}
+</code></pre>
+
+<h3>Lambda Expression (Java 8+)</h3>
+<pre><code>// Cara modern dengan lambda
+submitButton.setOnClickListener(v -> handleSubmitClick());
+
+// Multiple buttons
+button1.setOnClickListener(v -> showToast("Button 1 clicked"));
+button2.setOnClickListener(v -> showToast("Button 2 clicked"));
+
+private void showToast(String message) {
+    Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+}
+</code></pre>
+
+<h2>5. Contoh Lengkap: Form Login</h2>
+
+<h3>layout/activity_login.xml</h3>
+<pre><code>&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;androidx.constraintlayout.widget.ConstraintLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="32dp"
+    android:background="#F5F5F5"&gt;
+
+    &lt;!-- Logo --&gt;
+    &lt;ImageView
+        android:id="@+id/logoImage"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:src="@drawable/ic_launcher_foreground"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="50dp" /&gt;
+
+    &lt;!-- Title --&gt;
+    &lt;TextView
+        android:id="@+id/titleText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Login"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        android:textColor="@color/primary_blue"
+        app:layout_constraintTop_toBottomOf="@id/logoImage"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="20dp" /&gt;
+
+    &lt;!-- Email Input --&gt;
+    &lt;EditText
+        android:id="@+id/emailInput"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="@string/hint_email"
+        android:inputType="textEmailAddress"
+        android:padding="16dp"
+        android:background="@drawable/edittext_background"
+        app:layout_constraintTop_toBottomOf="@id/titleText"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="40dp" /&gt;
+
+    &lt;!-- Password Input --&gt;
+    &lt;EditText
+        android:id="@+id/passwordInput"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="Password"
+        android:inputType="textPassword"
+        android:padding="16dp"
+        android:background="@drawable/edittext_background"
+        app:layout_constraintTop_toBottomOf="@id/emailInput"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp" /&gt;
+
+    &lt;!-- Login Button --&gt;
+    &lt;Button
+        android:id="@+id/loginButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="LOGIN"
+        android:textColor="@color/white"
+        android:background="@drawable/button_background"
+        android:padding="16dp"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@id/passwordInput"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="24dp" /&gt;
+
+    &lt;!-- Register Link --&gt;
+    &lt;TextView
+        android:id="@+id/registerLink"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Belum punya akun? Daftar disini"
+        android:textColor="@color/primary_blue"
+        android:textSize="14sp"
+        app:layout_constraintTop_toBottomOf="@id/loginButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="20dp" /&gt;
+
+&lt;/androidx.constraintlayout.widget.ConstraintLayout&gt;
+</code></pre>
+
+<h3>LoginActivity.java</h3>
+<pre><code>public class LoginActivity extends AppCompatActivity {
+    private EditText emailInput, passwordInput;
+    private Button loginButton;
+    private TextView registerLink;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_login);
+        
+        initViews();
+        setupClickListeners();
+    }
+    
+    private void initViews() {
+        emailInput = findViewById(R.id.emailInput);
+        passwordInput = findViewById(R.id.passwordInput);
+        loginButton = findViewById(R.id.loginButton);
+        registerLink = findViewById(R.id.registerLink);
+    }
+    
+    private void setupClickListeners() {
+        loginButton.setOnClickListener(v -> handleLogin());
+        registerLink.setOnClickListener(v -> openRegisterActivity());
+    }
+    
+    private void handleLogin() {
+        String email = emailInput.getText().toString().trim();
+        String password = passwordInput.getText().toString().trim();
+        
+        // Validation
+        if (email.isEmpty()) {
+            emailInput.setError("Email tidak boleh kosong");
+            emailInput.requestFocus();
+            return;
+        }
+        
+        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            emailInput.setError("Format email tidak valid");
+            emailInput.requestFocus();
+            return;
+        }
+        
+        if (password.isEmpty()) {
+            passwordInput.setError("Password tidak boleh kosong");
+            passwordInput.requestFocus();
+            return;
+        }
+        
+        if (password.length() < 6) {
+            passwordInput.setError("Password minimal 6 karakter");
+            passwordInput.requestFocus();
+            return;
+        }
+        
+        // Simulate login
+        showToast("Login berhasil!");
+        // TODO: Navigate to main activity
+    }
+    
+    private void openRegisterActivity() {
+        showToast("Fitur registrasi akan segera hadir");
+    }
+    
+    private void showToast(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+}
+</code></pre>
+
+<h2>6. Custom Drawable Resources</h2>
+
+<h3>drawable/edittext_background.xml</h3>
+<pre><code>&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;shape xmlns:android="http://schemas.android.com/apk/res/android"&gt;
+    &lt;solid android:color="@color/white" /&gt;
+    &lt;stroke android:width="1dp" android:color="#DDDDDD" /&gt;
+    &lt;corners android:radius="8dp" /&gt;
+&lt;/shape&gt;
+</code></pre>
+
+<h3>drawable/button_background.xml</h3>
+<pre><code>&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;selector xmlns:android="http://schemas.android.com/apk/res/android"&gt;
+    &lt;item android:state_pressed="true"&gt;
+        &lt;shape&gt;
+            &lt;solid android:color="#1976D2" /&gt;
+            &lt;corners android:radius="8dp" /&gt;
+        &lt;/shape&gt;
+    &lt;/item&gt;
+    &lt;item&gt;
+        &lt;shape&gt;
+            &lt;solid android:color="@color/primary_blue" /&gt;
+            &lt;corners android:radius="8dp" /&gt;
+        &lt;/shape&gt;
+    &lt;/item&gt;
+&lt;/selector&gt;
+</code></pre>
+
+<hr>
+
+<h2>📝 Latihan Praktik</h2>
+
+<h3>Latihan 1: Profile Card</h3>
+<p>Buat layout yang menampilkan:</p>
+<ul>
+    <li>Photo profile (ImageView)</li>
+    <li>Nama (TextView)</li>
+    <li>Email (TextView)</li>
+    <li>Button "Edit Profile"</li>
+</ul>
+
+<h3>Latihan 2: Calculator Layout</h3>
+<p>Buat layout kalkulator sederhana dengan:</p>
+<ul>
+    <li>Display hasil (TextView)</li>
+    <li>Grid button angka 0-9</li>
+    <li>Button operasi (+, -, ×, ÷)</li>
+    <li>Button equals (=)</li>
+</ul>
+
+<h3>Latihan 3: Registration Form</h3>
+<p>Buat form registrasi dengan validasi:</p>
+<ul>
+    <li>Nama lengkap (required)</li>
+    <li>Email (required, format email)</li>
+    <li>Password (required, min 6 karakter)</li>
+    <li>Confirm password (required, harus sama)</li>
+    <li>CheckBox "Setuju dengan terms"</li>
+    <li>Button "Daftar"</li>
+</ul>
+
+<hr>
+
+<h2>🔑 Poin Penting</h2>
+<ul>
+    <li><strong>View</strong> adalah komponen UI dasar di Android</li>
+    <li><strong>Layout</strong> mengatur posisi dan ukuran Views</li>
+    <li><strong>ConstraintLayout</strong> adalah layout modern yang direkomendasikan</li>
+    <li><strong>Resources</strong> (colors, strings, dimens) membuat kode lebih maintainable</li>
+    <li><strong>Click listeners</strong> menangani interaksi user</li>
+    <li><strong>Validation</strong> penting untuk user experience yang baik</li>
+</ul>
+
+<hr>
+
+<h2>❌ Common Errors</h2>
+
+<h3>1. "findViewById returns null"</h3>
+<p><strong>Penyebab:</strong> ID tidak ditemukan atau salah layout<br>
+<strong>Solusi:</strong> Pastikan ID benar dan <code>setContentView()</code> sudah dipanggil</p>
+
+<h3>2. "App crashes on button click"</h3>
+<p><strong>Penyebab:</strong> Listener tidak di-set atau null pointer<br>
+<strong>Solusi:</strong> Pastikan <code>findViewById</code> dan <code>setOnClickListener</code> sudah benar</p>
+
+<h3>3. Layout tidak sesuai harapan</h3>
+<p><strong>Penyebab:</strong> Constraint atau layout parameter salah<br>
+<strong>Solusi:</strong> Gunakan Layout Inspector untuk debug layout</p>
+
+<h3>4. EditText tidak bisa di-input</h3>
+<p><strong>Penyebab:</strong> <code>focusable="false"</code> atau tidak ada <code>inputType</code><br>
+<strong>Solusi:</strong> Set <code>inputType</code> yang sesuai</p>
+
+<hr>
+
+<h2>🎯 Quiz Singkat</h2>
+<ol>
+    <li>Layout mana yang paling direkomendasikan untuk UI modern?</li>
+    <li>Bagaimana cara menangani click event pada Button?</li>
+    <li>Apa perbedaan <code>wrap_content</code> dan <code>match_parent</code>?</li>
+    <li>File resource mana yang digunakan untuk menyimpan warna?</li>
+</ol>
+
+<p><strong>Jawaban:</strong></p>
+<ol>
+    <li>ConstraintLayout</li>
+    <li>Dengan <code>setOnClickListener()</code></li>
+    <li><code>wrap_content</code>: sesuai konten, <code>match_parent</code>: ikuti parent</li>
+    <li><code>colors.xml</code></li>
+</ol>
+
+<hr>
+
+<h2>📚 Persiapan Modul Selanjutnya</h2>
+<p>Modul berikutnya akan membahas <strong>Java untuk Android</strong> dimana kita akan:</p>
+<ul>
+    <li>Review Java fundamentals untuk Android</li>
+    <li>Mempelajari konsep null safety</li>
+    <li>Bekerja dengan data classes dan collections</li>
+    <li>Event handling yang lebih advanced</li>
+</ul>
+<p><strong>Pastikan Anda sudah berhasil membuat form login yang fungsional sebelum lanjut!</strong></p>
