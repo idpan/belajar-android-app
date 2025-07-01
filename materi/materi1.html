@@ -1,0 +1,252 @@
+
+  <h3>🎯 Tujuan Pembelajaran</h3>
+  <p>Setelah menyelesaikan modul ini, Anda akan mampu:</p>
+  <ul>
+    <li>Menginstall dan mengkonfigurasi Android Studio</li>
+    <li>Membuat project Android pertama</li>
+    <li>Memahami struktur project Android</li>
+    <li>Memahami Activity dan lifecycle</li>
+    <li>Menjalankan aplikasi di emulator/device</li>
+  </ul>
+
+  <hr>
+
+  <h2>1. Instalasi Android Studio</h2>
+  <h3>Apa itu Android Studio?</h3>
+  <p>Android Studio adalah IDE (Integrated Development Environment) resmi untuk pengembangan aplikasi Android. Dikembangkan oleh Google berdasarkan IntelliJ IDEA.</p>
+
+  <h3>Langkah Instalasi:</h3>
+  <ol>
+    <li>
+      <strong>Download Android Studio</strong>
+      <ul>
+        <li>Kunjungi: <a href="https://developer.android.com/studio" target="_blank">https://developer.android.com/studio</a></li>
+        <li>Pilih versi sesuai OS Anda (Windows/Mac/Linux)</li>
+        <li>Ukuran file sekitar 1GB</li>
+      </ul>
+    </li>
+    <li>
+      <strong>Install Android Studio</strong>
+      <ul>
+        <li>Jalankan installer</li>
+        <li>Pilih "Standard Installation"</li>
+        <li>Tunggu proses unduh SDK components (~2-3GB)</li>
+      </ul>
+    </li>
+    <li>
+      <strong>Setup AVD (Android Virtual Device)</strong>
+      <ul>
+        <li>Buka AVD Manager</li>
+        <li>Create Virtual Device</li>
+        <li>Pilih device (misal: Pixel 4)</li>
+        <li>Pilih system image (API 30 atau terbaru)</li>
+      </ul>
+    </li>
+  </ol>
+
+  <h3>⚠️ Tips:</h3>
+  <ul>
+    <li>RAM minimal 8GB</li>
+    <li>Sisa storage minimal 4GB</li>
+    <li>Aktifkan virtualization di BIOS untuk emulator</li>
+  </ul>
+
+  <hr>
+
+  <h2>2. Membuat Project Pertama</h2>
+  <h3>Step-by-step:</h3>
+  <ol>
+    <li>
+      <strong>Start New Project</strong>
+      <ul>
+        <li>Buka Android Studio</li>
+        <li>Pilih "Create New Project"</li>
+        <li>Pilih "Empty Activity"</li>
+      </ul>
+    </li>
+    <li>
+      <strong>Konfigurasi Project</strong>
+      <pre><code>
+Name: Hello World
+Package name: com.example.helloworld
+Save location: [pilih folder]
+Language: Java
+Minimum API level: API 21 (Android 5.0)
+      </code></pre>
+    </li>
+    <li>
+      <strong>Struktur Project</strong>
+      <pre><code>
+app/
+├── src/main/
+│   ├── java/com/example/helloworld/
+│   │   └── MainActivity.java
+│   ├── res/
+│   │   ├── layout/
+│   │   │   └── activity_main.xml
+│   │   ├── values/
+│   │   │   ├── strings.xml
+│   │   │   └── colors.xml
+│   │   └── mipmap/
+└── AndroidManifest.xml
+      </code></pre>
+    </li>
+  </ol>
+
+  <hr>
+
+  <h2>3. Memahami File Penting</h2>
+  <h3>MainActivity.java</h3>
+  <pre><code class="lang-java">
+package com.example.helloworld;
+
+import androidx.appcompat.app.AppCompatActivity;
+import android.os.Bundle;
+
+public class MainActivity extends AppCompatActivity {
+  @Override
+  protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_main);
+  }
+}
+  </code></pre>
+
+  <h3>Penjelasan:</h3>
+  <ul>
+    <li><code>AppCompatActivity</code>: Parent class untuk activity</li>
+    <li><code>onCreate()</code>: Dipanggil saat activity dibuat</li>
+    <li><code>setContentView()</code>: Menghubungkan activity dengan layout XML</li>
+  </ul>
+
+  <h3>activity_main.xml</h3>
+  <pre><code class="lang-xml">
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout 
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  tools:context=".MainActivity">
+
+  <TextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="Hello World!"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintLeft_toLeftOf="parent"
+    app:layout_constraintRight_toRightOf="parent"
+    app:layout_constraintTop_toTopOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>
+  </code></pre>
+
+  <hr>
+
+  <h2>4. Activity Lifecycle</h2>
+  <h3>Method Lifecycle Utama</h3>
+  <pre><code class="lang-java">
+public class MainActivity extends AppCompatActivity {
+
+  @Override
+  protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_main);
+  }
+
+  @Override
+  protected void onStart() {
+    super.onStart();
+  }
+
+  @Override
+  protected void onResume() {
+    super.onResume();
+  }
+
+  @Override
+  protected void onPause() {
+    super.onPause();
+  }
+
+  @Override
+  protected void onStop() {
+    super.onStop();
+  }
+
+  @Override
+  protected void onDestroy() {
+    super.onDestroy();
+  }
+}
+  </code></pre>
+
+  <hr>
+
+  <h2>5. Menjalankan Aplikasi</h2>
+  <h3>Dengan Emulator:</h3>
+  <ol>
+    <li>Klik tombol "Run" (▶️) atau tekan Ctrl+R</li>
+    <li>Pilih emulator yang tersedia</li>
+    <li>Tunggu hingga booting selesai</li>
+    <li>Aplikasi otomatis berjalan</li>
+  </ol>
+
+  <h3>Dengan Device Fisik:</h3>
+  <ol>
+    <li>Aktifkan Developer Options</li>
+    <li>Aktifkan USB Debugging</li>
+    <li>Hubungkan ke PC</li>
+    <li>Pilih device di Android Studio</li>
+    <li>Klik "Run"</li>
+  </ol>
+
+  <hr>
+
+  <h2>📝 Latihan Praktik</h2>
+  <h3>Latihan 1: Modifikasi Text</h3>
+  <ul>
+    <li>Ubah teks "Hello World!" menjadi "Selamat Datang di Android!"</li>
+    <li>Jalankan aplikasi</li>
+  </ul>
+
+  <h3>Latihan 2: Tambah Log</h3>
+  <pre><code class="lang-java">
+import android.util.Log;
+
+Log.d("MainActivity", "Activity telah dibuat!");
+  </code></pre>
+
+  <h3>Latihan 3: Lifecycle Log</h3>
+  <p>Tambahkan Log.d() di semua method lifecycle dan amati urutan di Logcat.</p>
+
+  <hr>
+
+  <h2>🔑 Poin Penting</h2>
+  <ul>
+    <li><strong>Android Studio</strong> adalah IDE utama</li>
+    <li><strong>Activity</strong> adalah komponen dasar</li>
+    <li><strong>Layout XML</strong> untuk UI</li>
+    <li><strong>AndroidManifest.xml</strong> untuk konfigurasi</li>
+    <li><strong>Lifecycle</strong> mengatur perilaku activity</li>
+  </ul>
+
+  <hr>
+
+  <h2>🎯 Quiz Singkat</h2>
+  <ol>
+    <li>Method lifecycle mana yang dipanggil pertama kali? → <strong>onCreate()</strong></li>
+    <li>File mana yang mengatur tampilan UI? → <strong>activity_main.xml</strong></li>
+    <li>Apa fungsi <code>setContentView()</code>? → <strong>Menghubungkan activity dengan layout</strong></li>
+    <li>Dimana kita mendaftarkan activity? → <strong>AndroidManifest.xml</strong></li>
+  </ol>
+
+  <hr>
+
+  <h2>📚 Persiapan Modul Selanjutnya</h2>
+  <p>Modul selanjutnya akan membahas UI Development:</p>
+  <ul>
+    <li>Mengenal berbagai jenis Views</li>
+    <li>Membuat layout kompleks</li>
+    <li>Interaksi dengan user</li>
+  </ul>
