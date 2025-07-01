@@ -1,0 +1,707 @@
+<h1>Modul 3: Java untuk Android</h1>
+
+<h2>Java Fundamentals untuk Android Development</h2>
+
+<h3>🎯 Tujuan Pembelajaran</h3>
+
+<p>Setelah menyelesaikan modul ini, Anda akan mampu:</p>
+
+<ul>
+<li>Menguasai Java concepts yang penting untuk Android</li>
+<li>Menggunakan collections dan data structures</li>
+<li>Menerapkan OOP principles dalam Android</li>
+<li>Menangani null values dengan aman</li>
+<li>Bekerja dengan inner classes dan interfaces</li>
+<li>Menggunakan lambda expressions dan method references</li>
+</ul>
+
+<hr>
+
+<h2>1. Java Fundamentals Review</h2>
+
+<h3>Variables dan Data Types</h3>
+
+<pre><code>public class DataTypesExample {
+
+    // Primitive types
+    private int age = 25;
+    private double salary = 50000.50;
+    private boolean isActive = true;
+    private char grade = 'A';
+    
+    // Reference types
+    private String name = "John Doe";
+    private String[] hobbies = {"Reading", "Coding", "Gaming"};
+    
+    // Constants
+    private static final String TAG = "DataTypesExample";
+    private static final int MAX_USERS = 100;
+}</code></pre>
+
+<h3>String Operations untuk Android</h3>
+
+<pre><code>public class StringHelper {
+    
+    // String formatting
+    public static String formatUserInfo(String name, int age) {
+        return String.format("Name: %s, Age: %d", name, age);
+    }
+    
+    // Validation methods
+    public static boolean isValidEmail(String email) {
+        return email != null && 
+               !email.trim().isEmpty() && 
+               android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
+    }
+    
+    public static boolean isValidPassword(String password) {
+        return password != null && 
+               password.length() >= 6 && 
+               !password.trim().isEmpty();
+    }
+    
+    // String manipulation
+    public static String capitalizeFirst(String text) {
+        if (text == null || text.isEmpty()) {
+            return text;
+        }
+        return text.substring(0, 1).toUpperCase() + text.substring(1).toLowerCase();
+    }
+    
+    // Join array to string (useful for displaying lists)
+    public static String joinArray(String[] array, String delimiter) {
+        if (array == null || array.length == 0) {
+            return "";
+        }
+        
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < array.length; i++) {
+            sb.append(array[i]);
+            if (i < array.length - 1) {
+                sb.append(delimiter);
+            }
+        }
+        return sb.toString();
+    }
+}</code></pre>
+
+<hr>
+
+<h2>2. Collections dan Data Structures</h2>
+
+<h3>ArrayList - Dynamic Arrays</h3>
+
+<pre><code>import java.util.ArrayList;
+import java.util.List;
+
+public class UserManager {
+    private List<String> userNames;
+    private List<User> users;
+    
+    public UserManager() {
+        userNames = new ArrayList<>();
+        users = new ArrayList<>();
+    }
+    
+    // Add operations
+    public void addUser(String name) {
+        if (name != null && !name.trim().isEmpty()) {
+            userNames.add(name.trim());
+        }
+    }
+    
+    public void addUser(User user) {
+        if (user != null && isValidUser(user)) {
+            users.add(user);
+        }
+    }
+    
+    // Search operations
+    public boolean hasUser(String name) {
+        return userNames.contains(name);
+    }
+    
+    public User findUserByEmail(String email) {
+        for (User user : users) {
+            if (user.getEmail().equals(email)) {
+                return user;
+            }
+        }
+        return null; // Not found
+    }
+    
+    // Remove operations
+    public boolean removeUser(String name) {
+        return userNames.remove(name);
+    }
+    
+    public void removeUserAt(int index) {
+        if (index >= 0 && index < users.size()) {
+            users.remove(index);
+        }
+    }
+    
+    // Utility methods
+    public int getUserCount() {
+        return users.size();
+    }
+    
+    public boolean isEmpty() {
+        return users.isEmpty();
+    }
+    
+    public List<String> getAllUserNames() {
+        List<String> names = new ArrayList<>();
+        for (User user : users) {
+            names.add(user.getName());
+        }
+        return names;
+    }
+    
+    private boolean isValidUser(User user) {
+        return user.getName() != null && 
+               !user.getName().trim().isEmpty() &&
+               user.getEmail() != null && 
+               !user.getEmail().trim().isEmpty();
+    }
+}</code></pre>
+
+<h3>HashMap - Key-Value Storage</h3>
+
+<pre><code>import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
+public class SettingsManager {
+    private Map<String, String> settings;
+    
+    public SettingsManager() {
+        settings = new HashMap<>();
+        loadDefaultSettings();
+    }
+    
+    private void loadDefaultSettings() {
+        settings.put("theme", "light");
+        settings.put("language", "id");
+        settings.put("notification", "true");
+        settings.put("auto_save", "false");
+    }
+    
+    // Get methods
+    public String getSetting(String key) {
+        return settings.get(key);
+    }
+    
+    public String getSetting(String key, String defaultValue) {
+        return settings.getOrDefault(key, defaultValue);
+    }
+    
+    public boolean getBooleanSetting(String key) {
+        return "true".equals(settings.get(key));
+    }
+    
+    public int getIntSetting(String key, int defaultValue) {
+        try {
+            String value = settings.get(key);
+            return value != null ? Integer.parseInt(value) : defaultValue;
+        } catch (NumberFormatException e) {
+            return defaultValue;
+        }
+    }
+    
+    // Set methods
+    public void setSetting(String key, String value) {
+        if (key != null && value != null) {
+            settings.put(key, value);
+        }
+    }
+    
+    public void setBooleanSetting(String key, boolean value) {
+        settings.put(key, String.valueOf(value));
+    }
+    
+    public void setIntSetting(String key, int value) {
+        settings.put(key, String.valueOf(value));
+    }
+    
+    // Utility methods
+    public Set<String> getAllKeys() {
+        return settings.keySet();
+    }
+    
+    public boolean hasSetting(String key) {
+        return settings.containsKey(key);
+    }
+    
+    public void removeSetting(String key) {
+        settings.remove(key);
+    }
+    
+    public void clearAllSettings() {
+        settings.clear();
+        loadDefaultSettings();
+    }
+}</code></pre>
+
+<hr>
+
+<h2>3. Object-Oriented Programming untuk Android</h2>
+
+<h3>Model Classes (Data Classes)</h3>
+
+<pre><code>public class User {
+    private int id;
+    private String name;
+    private String email;
+    private String phone;
+    private boolean isActive;
+    private long createdAt;
+    
+    // Constructors
+    public User() {
+        this.createdAt = System.currentTimeMillis();
+        this.isActive = true;
+    }
+    
+    public User(String name, String email) {
+        this();
+        this.name = name;
+        this.email = email;
+    }
+    
+    public User(int id, String name, String email, String phone) {
+        this(name, email);
+        this.id = id;
+        this.phone = phone;
+    }
+    
+    // Getters
+    public int getId() { return id; }
+    public String getName() { return name; }
+    public String getEmail() { return email; }
+    public String getPhone() { return phone; }
+    public boolean isActive() { return isActive; }
+    public long getCreatedAt() { return createdAt; }
+    
+    // Setters
+    public void setId(int id) { this.id = id; }
+    public void setName(String name) { this.name = name; }
+    public void setEmail(String email) { this.email = email; }
+    public void setPhone(String phone) { this.phone = phone; }
+    public void setActive(boolean active) { isActive = active; }
+    
+    // Business methods
+    public String getDisplayName() {
+        return name != null ? name : "Unknown User";
+    }
+    
+    public boolean hasPhone() {
+        return phone != null && !phone.trim().isEmpty();
+    }
+    
+    public String getFormattedCreatedDate() {
+        return new java.text.SimpleDateFormat("dd/MM/yyyy", 
+            java.util.Locale.getDefault()).format(new java.util.Date(createdAt));
+    }
+    
+    // Override methods
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", isActive=" + isActive +
+                '}';
+    }
+    
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        
+        User user = (User) obj;
+        return id == user.id && 
+               java.util.Objects.equals(email, user.email);
+    }
+    
+    @Override
+    public int hashCode() {
+        return java.util.Objects.hash(id, email);
+    }
+}</code></pre>
+
+<h3>Inheritance Example</h3>
+
+<pre><code>// Base class
+public abstract class BaseActivity extends AppCompatActivity {
+    protected static final String TAG = "BaseActivity";
+    protected ProgressBar progressBar;
+    
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        initBaseComponents();
+    }
+    
+    protected void initBaseComponents() {
+        // Common initialization
+        Log.d(TAG, "Activity created: " + getClass().getSimpleName());
+    }
+    
+    protected void showLoading(boolean show) {
+        if (progressBar != null) {
+            progressBar.setVisibility(show ? View.VISIBLE : View.GONE);
+        }
+    }
+    
+    protected void showToast(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+    
+    protected void showToast(int messageResId) {
+        Toast.makeText(this, messageResId, Toast.LENGTH_SHORT).show();
+    }
+    
+    // Abstract method to be implemented by child classes
+    protected abstract void setupUI();
+    protected abstract void setupListeners();
+}
+
+// Child class
+public class LoginActivity extends BaseActivity {
+    private EditText emailInput, passwordInput;
+    private Button loginButton;
+    
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_login);
+        
+        setupUI();
+        setupListeners();
+    }
+    
+    @Override
+    protected void setupUI() {
+        emailInput = findViewById(R.id.emailInput);
+        passwordInput = findViewById(R.id.passwordInput);
+        loginButton = findViewById(R.id.loginButton);
+        progressBar = findViewById(R.id.progressBar);
+    }
+    
+    @Override
+    protected void setupListeners() {
+        loginButton.setOnClickListener(v -> handleLogin());
+    }
+    
+    private void handleLogin() {
+        String email = emailInput.getText().toString().trim();
+        String password = passwordInput.getText().toString().trim();
+        
+        if (validateInput(email, password)) {
+            performLogin(email, password);
+        }
+    }
+    
+    private boolean validateInput(String email, String password) {
+        if (email.isEmpty()) {
+            emailInput.setError("Email required");
+            return false;
+        }
+        
+        if (password.isEmpty()) {
+            passwordInput.setError("Password required");
+            return false;
+        }
+        
+        return true;
+    }
+    
+    private void performLogin(String email, String password) {
+        showLoading(true);
+        
+        // Simulate login process
+        new Handler().postDelayed(() -> {
+            showLoading(false);
+            showToast("Login successful!");
+        }, 2000);
+    }
+}</code></pre>
+
+<hr>
+
+<h2>4. Interfaces dan Event Handling</h2>
+
+<h3>Custom Interfaces</h3>
+
+<pre><code>// Interface definition
+public interface OnDataLoadListener {
+    void onDataLoaded(List<User> users);
+    void onDataLoadError(String error);
+    void onLoadingStarted();
+}
+
+// Interface for item interactions
+public interface OnItemClickListener<T> {
+    void onItemClick(T item, int position);
+    void onItemLongClick(T item, int position);
+}
+
+// Data service class
+public class UserService {
+    private OnDataLoadListener listener;
+    
+    public void setOnDataLoadListener(OnDataLoadListener listener) {
+        this.listener = listener;
+    }
+    
+    public void loadUsers() {
+        if (listener != null) {
+            listener.onLoadingStarted();
+        }
+        
+        // Simulate network call
+        new Handler().postDelayed(() -> {
+            try {
+                List<User> users = fetchUsersFromServer();
+                if (listener != null) {
+                    listener.onDataLoaded(users);
+                }
+            } catch (Exception e) {
+                if (listener != null) {
+                    listener.onDataLoadError(e.getMessage());
+                }
+            }
+        }, 1500);
+    }
+    
+    private List<User> fetchUsersFromServer() {
+        // Simulate data fetching
+        List<User> users = new ArrayList<>();
+        users.add(new User("John Doe", "john@example.com"));
+        users.add(new User("Jane Smith", "jane@example.com"));
+        return users;
+    }
+}
+
+// Usage in Activity
+public class UserListActivity extends AppCompatActivity implements OnDataLoadListener {
+    private UserService userService;
+    private RecyclerView recyclerView;
+    private UserAdapter adapter;
+    
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_user_list);
+        
+        setupUserService();
+        loadUsers();
+    }
+    
+    private void setupUserService() {
+        userService = new UserService();
+        userService.setOnDataLoadListener(this);
+    }
+    
+    private void loadUsers() {
+        userService.loadUsers();
+    }
+    
+    @Override
+    public void onLoadingStarted() {
+        // Show loading indicator
+        findViewById(R.id.progressBar).setVisibility(View.VISIBLE);
+    }
+    
+    @Override
+    public void onDataLoaded(List<User> users) {
+        // Hide loading and show data
+        findViewById(R.id.progressBar).setVisibility(View.GONE);
+        adapter.updateUsers(users);
+    }
+    
+    @Override
+    public void onDataLoadError(String error) {
+        // Hide loading and show error
+        findViewById(R.id.progressBar).setVisibility(View.GONE);
+        Toast.makeText(this, "Error: " + error, Toast.LENGTH_LONG).show();
+    }
+}</code></pre>
+
+<hr>
+
+<h2>5. Lambda Expressions dan Functional Programming</h2>
+
+<h3>Basic Lambda Usage</h3>
+
+<pre><code>public class LambdaExamples {
+    
+    // Traditional way vs Lambda
+    public void setupClickListeners() {
+        Button button = findViewById(R.id.button);
+        
+        // Traditional anonymous class
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                handleClick();
+            }
+        });
+        
+        // Lambda expression
+        button.setOnClickListener(v -> handleClick());
+        
+        // Lambda with multiple parameters
+        EditText editText = findViewById(R.id.editText);
+        editText.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                handleTextSubmit();
+                return true;
+            }
+            return false;
+        });
+    }
+    
+    // Functional interfaces for custom callbacks
+    @FunctionalInterface
+    public interface Callback<T> {
+        void onResult(T result);
+    }
+    
+    @FunctionalInterface
+    public interface ValidationRule<T> {
+        boolean isValid(T value);
+    }
+    
+    // Using functional interfaces
+    public void performAsyncOperation(String input, Callback<String> callback) {
+        new Thread(() -> {
+            // Simulate work
+            try {
+                Thread.sleep(1000);
+                String result = "Processed: " + input;
+                
+                // Callback on main thread
+                runOnUiThread(() -> callback.onResult(result));
+            } catch (InterruptedException e) {
+                runOnUiThread(() -> callback.onResult("Error occurred"));
+            }
+        }).start();
+    }
+    
+    // Usage example
+    private void useAsyncOperation() {
+        performAsyncOperation("test data", result -> {
+            // This runs on main thread
+            Toast.makeText(this, result, Toast.LENGTH_SHORT).show();
+        });
+    }
+    
+    // Validation with lambda
+    public boolean validateForm(String email, String password) {
+        ValidationRule<String> emailRule = text -> 
+            text != null && android.util.Patterns.EMAIL_ADDRESS.matcher(text).matches();
+        
+        ValidationRule<String> passwordRule = text -> 
+            text != null && text.length() >= 6;
+        
+        return emailRule.isValid(email) && passwordRule.isValid(password);
+    }
+}</code></pre>
+
+<h3>Stream-like Operations (Java 8+)</h3>
+
+<pre><code>import java.util.stream.Collectors;
+
+public class StreamExamples {
+    private List<User> users;
+    
+    // Filter active users
+    public List<User> getActiveUsers() {
+        return users.stream()
+                   .filter(User::isActive)
+                   .collect(Collectors.toList());
+    }
+    
+    // Get user names
+    public List<String> getUserNames() {
+        return users.stream()
+                   .map(User::getName)
+                   .filter(name -> name != null && !name.isEmpty())
+                   .collect(Collectors.toList());
+    }
+    
+    // Find user by email
+    public User findUserByEmail(String email) {
+        return users.stream()
+                   .filter(user -> email.equals(user.getEmail()))
+                   .findFirst()
+                   .orElse(null);
+    }
+    
+    // Count users by criteria
+    public long countActiveUsers() {
+        return users.stream()
+                   .filter(User::isActive)
+                   .count();
+    }
+    
+    // Sort users by name
+    public List<User> getUsersSortedByName() {
+        return users.stream()
+                   .sorted((u1, u2) -> u1.getName().compareTo(u2.getName()))
+                   .collect(Collectors.toList());
+    }
+}</code></pre>
+
+<hr>
+
+<h2>6. Exception Handling</h2>
+
+<h3>Try-Catch Best Practices</h3>
+
+<pre><code>public class ExceptionHandlingExamples {
+    private static final String TAG = "ExceptionHandling";
+    
+    // File operations
+    public String readFileContent(String fileName) {
+        StringBuilder content = new StringBuilder();
+        
+        try (BufferedReader reader = new BufferedReader(
+                new FileReader(new File(getFilesDir(), fileName)))) {
+            
+            String line;
+            while ((line = reader.readLine()) != null) {
+                content.append(line).append("\n");
+            }
+            
+        } catch (FileNotFoundException e) {
+            Log.e(TAG, "File not found: " + fileName, e);
+            return "File not found";
+        } catch (IOException e) {
+            Log.e(TAG, "Error reading file: " + fileName, e);
+            return "Error reading file";
+        } catch (Exception e) {
+            Log.e(TAG, "Unexpected error", e);
+            return "Unexpected error occurred";
+        }
+        
+        return content.toString();
+    }
+    
+    // Network operations
+    public void performNetworkCall(String url, Callback<String> callback) {
+        new Thread(() -> {
+            try {
+                // Simulate network call
+                String result = makeHttpRequest(url);
+                runOnUiThread(() -> callback.onResult(result));
+                
+            } catch (NetworkException e) {
+                Log.e(TAG, "Network error", e);
+                runOnUiThread(() -> showError("Network error: " + e.getMessage()));
+                
+            } catch (TimeoutException e) {
+                Log.e(TAG, "Requ
