@@ -1,0 +1,410 @@
+
+<h1>Modul 4: Multiple Activities</h1>
+
+<h2>1. Konsep Multiple Activities</h2>
+
+<h3>Apa itu Activity?</h3>
+<ul>
+<li>Activity adalah satu layar/halaman dalam aplikasi Android</li>
+<li>Setiap activity memiliki lifecycle sendiri</li>
+<li>Aplikasi biasanya terdiri dari beberapa activity yang saling terhubung</li>
+</ul>
+
+<h3>Mengapa Butuh Multiple Activities?</h3>
+<ul>
+<li>Memisahkan fungsi aplikasi (login, home, detail, settings)</li>
+<li>Membuat navigasi yang lebih terstruktur</li>
+<li>Mengikuti prinsip single responsibility</li>
+</ul>
+
+<h2>2. Intent - Jembatan Antar Activity</h2>
+
+<h3>Apa itu Intent?</h3>
+<p>Intent adalah objek yang digunakan untuk meminta aksi dari komponen Android lain, terutama untuk berpindah activity.</p>
+
+<h3>Jenis Intent:</h3>
+<ul>
+<li><strong>Explicit Intent</strong>: Memanggil activity tertentu dalam aplikasi kita</li>
+<li><strong>Implicit Intent</strong>: Meminta sistem untuk mencari activity yang bisa menangani aksi tertentu</li>
+</ul>
+
+<h2>3. Membuat Activity Baru</h2>
+
+<h3>Langkah 1: Buat Activity Baru</h3>
+<ol>
+<li>Klik kanan pada package → New → Activity → Empty Activity</li>
+<li>Beri nama <code>SecondActivity</code></li>
+<li>Android Studio otomatis membuat:
+   <ul>
+   <li><code>SecondActivity.java</code></li>
+   <li><code>activity_second.xml</code></li>
+   <li>Menambah entry di <code>AndroidManifest.xml</code></li>
+   </ul>
+</li>
+</ol>
+
+<h3>Langkah 2: Design Layout SecondActivity</h3>
+<pre><code>&lt;!-- activity_second.xml --&gt;
+&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:gravity="center"&gt;
+
+    &lt;TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Halaman Kedua"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="20dp" /&gt;
+
+    &lt;TextView
+        android:id="@+id/tvMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Selamat datang di halaman kedua!"
+        android:textSize="16sp"
+        android:layout_marginBottom="30dp" /&gt;
+
+    &lt;Button
+        android:id="@+id/btnBack"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Kembali" /&gt;
+
+&lt;/LinearLayout&gt;</code></pre>
+
+<h2>4. Berpindah Activity dengan Intent</h2>
+
+<h3>MainActivity.java - Mengirim Intent</h3>
+<pre><code>public class MainActivity extends AppCompatActivity {
+    
+    private Button btnGoToSecond;
+    
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        
+        btnGoToSecond = findViewById(R.id.btnGoToSecond);
+        
+        btnGoToSecond.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Membuat intent untuk berpindah ke SecondActivity
+                Intent intent = new Intent(MainActivity.this, SecondActivity.class);
+                startActivity(intent);
+            }
+        });
+    }
+}</code></pre>
+
+<h3>SecondActivity.java - Menerima Intent</h3>
+<pre><code>public class SecondActivity extends AppCompatActivity {
+    
+    private Button btnBack;
+    
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_second);
+        
+        btnBack = findViewById(R.id.btnBack);
+        
+        btnBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Kembali ke activity sebelumnya
+                finish();
+            }
+        });
+    }
+}</code></pre>
+
+<h2>5. Passing Data dengan putExtra</h2>
+
+<h3>Mengirim Data dari MainActivity</h3>
+<pre><code>btnGoToSecond.setOnClickListener(new View.OnClickListener() {
+    @Override
+    public void onClick(View v) {
+        Intent intent = new Intent(MainActivity.this, SecondActivity.class);
+        
+        // Mengirim data dengan putExtra
+        intent.putExtra("nama", "John Doe");
+        intent.putExtra("umur", 25);
+        intent.putExtra("isStudent", true);
+        
+        startActivity(intent);
+    }
+});</code></pre>
+
+<h3>Menerima Data di SecondActivity</h3>
+<pre><code>public class SecondActivity extends AppCompatActivity {
+    
+    private TextView tvMessage;
+    
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_second);
+        
+        tvMessage = findViewById(R.id.tvMessage);
+        
+        // Menerima data dari intent
+        Intent intent = getIntent();
+        String nama = intent.getStringExtra("nama");
+        int umur = intent.getIntExtra("umur", 0); // 0 adalah default value
+        boolean isStudent = intent.getBooleanExtra("isStudent", false);
+        
+        // Menampilkan data
+        String message = "Halo " + nama + "!\n" +
+                        "Umur: " + umur + " tahun\n" +
+                        "Status: " + (isStudent ? "Mahasiswa" : "Bukan Mahasiswa");
+        
+        tvMessage.setText(message);
+    }
+}</code></pre>
+
+<h2>6. startActivityForResult (Deprecated tapi Masih Penting)</h2>
+
+<h3>Konsep</h3>
+<p><code>startActivityForResult</code> digunakan ketika kita ingin mendapat hasil balik dari activity yang dipanggil.</p>
+
+<h3>MainActivity - Mengirim dengan expectasi hasil</h3>
+<pre><code>public class MainActivity extends AppCompatActivity {
+    
+    private static final int REQUEST_CODE_SECOND = 1001;
+    private TextView tvResult;
+    
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        
+        tvResult = findViewById(R.id.tvResult);
+        Button btnGoToSecond = findViewById(R.id.btnGoToSecond);
+        
+        btnGoToSecond.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, SecondActivity.class);
+                startActivityForResult(intent, REQUEST_CODE_SECOND);
+            }
+        });
+    }
+    
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        
+        if (requestCode == REQUEST_CODE_SECOND) {
+            if (resultCode == RESULT_OK) {
+                String result = data.getStringExtra("result");
+                tvResult.setText("Hasil: " + result);
+            } else if (resultCode == RESULT_CANCELED) {
+                tvResult.setText("User membatalkan operasi");
+            }
+        }
+    }
+}</code></pre>
+
+<h3>SecondActivity - Mengirim hasil balik</h3>
+<pre><code>public class SecondActivity extends AppCompatActivity {
+    
+    private EditText etInput;
+    
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_second);
+        
+        etInput = findViewById(R.id.etInput);
+        Button btnSave = findViewById(R.id.btnSave);
+        Button btnCancel = findViewById(R.id.btnCancel);
+        
+        btnSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String input = etInput.getText().toString();
+                
+                Intent resultIntent = new Intent();
+                resultIntent.putExtra("result", input);
+                setResult(RESULT_OK, resultIntent);
+                finish();
+            }
+        });
+        
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setResult(RESULT_CANCELED);
+                finish();
+            }
+        });
+    }
+}</code></pre>
+
+<h2>7. Back Navigation</h2>
+
+<h3>finish()</h3>
+<ul>
+<li>Menutup activity saat ini dan kembali ke activity sebelumnya</li>
+<li>Sama seperti menekan tombol back</li>
+</ul>
+
+<h3>onBackPressed()</h3>
+<pre><code>@Override
+public void onBackPressed() {
+    // Custom logic sebelum kembali
+    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+    builder.setMessage("Yakin ingin keluar?");
+    builder.setPositiveButton("Ya", new DialogInterface.OnClickListener() {
+        @Override
+        public void onClick(DialogInterface dialog, int which) {
+            finish();
+        }
+    });
+    builder.setNegativeButton("Tidak", null);
+    builder.show();
+}</code></pre>
+
+<h2>8. Praktik - Aplikasi Multi-Activity</h2>
+
+<h3>Skenario: Aplikasi Profile</h3>
+<ol>
+<li><strong>MainActivity</strong>: Form input nama dan email</li>
+<li><strong>ProfileActivity</strong>: Menampilkan profile</li>
+<li><strong>EditActivity</strong>: Edit profile dan kirim hasil balik</li>
+</ol>
+
+<h3>MainActivity Layout</h3>
+<pre><code>&lt;!-- activity_main.xml --&gt;
+&lt;LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"&gt;
+
+    &lt;EditText
+        android:id="@+id/etNama"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Masukkan nama" /&gt;
+
+    &lt;EditText
+        android:id="@+id/etEmail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Masukkan email"
+        android:inputType="textEmailAddress" /&gt;
+
+    &lt;Button
+        android:id="@+id/btnLihatProfile"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Lihat Profile" /&gt;
+
+&lt;/LinearLayout&gt;</code></pre>
+
+<h3>MainActivity.java</h3>
+<pre><code>public class MainActivity extends AppCompatActivity {
+    
+    private EditText etNama, etEmail;
+    
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        
+        etNama = findViewById(R.id.etNama);
+        etEmail = findViewById(R.id.etEmail);
+        Button btnLihatProfile = findViewById(R.id.btnLihatProfile);
+        
+        btnLihatProfile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String nama = etNama.getText().toString().trim();
+                String email = etEmail.getText().toString().trim();
+                
+                if (!nama.isEmpty() && !email.isEmpty()) {
+                    Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
+                    intent.putExtra("nama", nama);
+                    intent.putExtra("email", email);
+                    startActivity(intent);
+                } else {
+                    Toast.makeText(MainActivity.this, "Lengkapi semua field!", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+}</code></pre>
+
+<h2>9. Tips dan Best Practices</h2>
+
+<h3>1. Penamaan Intent Keys</h3>
+<pre><code>// Gunakan konstanta untuk menghindari typo
+public static final String EXTRA_NAMA = "extra_nama";
+public static final String EXTRA_EMAIL = "extra_email";
+
+intent.putExtra(EXTRA_NAMA, nama);</code></pre>
+
+<h3>2. Null Check untuk Intent Data</h3>
+<pre><code>String nama = intent.getStringExtra("nama");
+if (nama != null) {
+    // Gunakan nama
+} else {
+    // Handle kasus null
+}</code></pre>
+
+<h3>3. Memory Management</h3>
+<pre><code>@Override
+protected void onDestroy() {
+    super.onDestroy();
+    // Cleanup resources jika perlu
+}</code></pre>
+
+<h2>10. Latihan</h2>
+
+<h3>Latihan 1: Kalkulator Multi-Activity</h3>
+<p>Buat aplikasi dengan 3 activity:</p>
+<ol>
+<li><strong>MainActivity</strong>: Input dua angka</li>
+<li><strong>OperationActivity</strong>: Pilih operasi (+, -, ×, ÷)</li>
+<li><strong>ResultActivity</strong>: Tampilkan hasil</li>
+</ol>
+
+<h3>Latihan 2: To-Do List Multi-Activity</h3>
+<ol>
+<li><strong>MainActivity</strong>: Daftar to-do</li>
+<li><strong>AddTaskActivity</strong>: Tambah task baru</li>
+<li><strong>DetailActivity</strong>: Detail task dengan option edit/delete</li>
+</ol>
+
+<h3>Tugas Kelas:</h3>
+<p>Buat aplikasi "Student Information System" dengan:</p>
+<ul>
+<li><strong>LoginActivity</strong>: Form login</li>
+<li><strong>MenuActivity</strong>: Menu utama dengan 3 pilihan</li>
+<li><strong>ProfileActivity</strong>: Tampil profile student</li>
+<li><strong>GradeActivity</strong>: Tampil nilai-nilai</li>
+<li><strong>ScheduleActivity</strong>: Tampil jadwal kuliah</li>
+</ul>
+<p>Setiap activity harus bisa menerima dan mengirim data yang relevan.</p>
+
+<h2>Kesimpulan</h2>
+
+<p>Multiple Activities adalah fondasi untuk membuat aplikasi Android yang kompleks. Konsep Intent dan passing data sangat penting untuk dipahami karena akan digunakan terus menerus dalam pengembangan Android.</p>
+
+<p><strong>Key Points:</strong></p>
+<ul>
+<li>Intent untuk navigasi antar activity</li>
+<li>putExtra() untuk mengirim data</li>
+<li>getIntent() untuk menerima data</li>
+<li>startActivityForResult() untuk mendapat hasil balik</li>
+<li>finish() untuk menutup activity</li>
+<li>Selalu lakukan null check untuk data yang diterima</li>
+</ul>
